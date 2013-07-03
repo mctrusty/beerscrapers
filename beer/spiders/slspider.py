@@ -1,17 +1,23 @@
 # coding: utf-8
-from scrapy.spider import BaseSpider
+from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.selector import HtmlXPathSelector
+from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 from beer.items import Beer
 
-class SuperiorLqSpider(BaseSpider):
+class SuperiorLqSpider(CrawlSpider):
     name = "superiorlq"
     allowed_domains = ["superiorliquormarket.com"]
     start_urls = [
-        "http://www.superiorliquormarket.com/Beer_c_77.html"
+        "http://www.superiorliquormarket.com"
     ]
     
-    def parse(self, response):
+    rules = (
+        Rule(SgmlLinkExtractor(allow=('Beer_c_77.html'))),
+        Rule(SgmlLinkExtractor(allow=('Beer_c_77-\d+-3.html')), callback = 'parse_item', follow=True),
+    )
+    
+    def parse_item(self, response):
         beers = []
         hxs = HtmlXPathSelector(response)
         p = hxs.select('//form[@id="frmsortby"]/table/tr[5]/td/table/tr[2]/td/table/tr') 
