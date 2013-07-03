@@ -20,18 +20,22 @@ class SuperiorLqSpider(CrawlSpider):
     def parse_item(self, response):
         beers = []
         hxs = HtmlXPathSelector(response)
+		# After page 1, tr[5] becomes tr[4] bc there's no cat list
         p = hxs.select('//form[@id="frmsortby"]/table/tr[5]/td/table/tr[2]/td/table/tr') 
+		
         for row in p:
             item = Beer()
             #LHS:
             item['beer'] = row.select('td/table/tr/td/a/text()').extract()[0]
             item['link'] = row.select('td/table/tr/td/a/@href').extract()[0]
             item['price'] = row.select('td//span[@class="price"]/text()').extract()[0]
-            beers.append(item)
+            yield item
+			#beers.append(item)
             #RHS:
             item['beer'] = row.select('td/table/tr/td/a/text()').extract()[2]
             item['link'] = row.select('td/table/tr/td/a/@href').extract()[3]
             item['price'] = row.select('td//span[@class="price"]/text()').extract()[1]
-            beers.append(item)
+            yield item
+			#beers.append(item)
             
-        return beers
+        #return beers
