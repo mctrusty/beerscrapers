@@ -29,6 +29,7 @@ class SuperiorLqSpider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         p = hxs.select(selector) 
         
+		#beer information is laid out in a 2 column table. rhs/lhs = right hand/left hand side
         for row in p:
             item = Beer()
             #LHS:

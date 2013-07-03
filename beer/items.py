@@ -9,6 +9,7 @@ class Beer(Item):
     # define the fields for your item here like:
     # name = Field()
     beer = Field()
+    size = Field()
     link = Field()
     price = Field()
     pass
