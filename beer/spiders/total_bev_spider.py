@@ -15,11 +15,11 @@ class TotalBevSpider(BaseSpider):
     ]
     
     def parse(self, response):
-        item = Beer()
         hxs = HtmlXPathSelector(response)
         rows = hxs.select('//table[@id="ContentTable"]//table/tr')
         
         for row in rows:
+            item = Beer()
             item['beer'] = row.select('td[3]/font/b/text()').extract()
             item['price'] = row.select('td[5]/font/b/text()').extract()
             item['size'] = row.select('td[4]/font/b/text()').extract()
