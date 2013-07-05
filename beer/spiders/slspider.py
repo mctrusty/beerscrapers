@@ -1,4 +1,5 @@
 # coding: utf-8
+import re
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
@@ -17,6 +18,9 @@ class SuperiorLqSpider(CrawlSpider):
         Rule(SgmlLinkExtractor(allow=('Beer_c_77-\d+-3.html')), callback = 'parse_item', follow=True),
     )
     
+    # Beer names are listed in the format: MFG - Beer (qty)
+    splitter = re.compile('(.*?) - (.*?) \(([^\)]+)\)')
+
     def parse_item(self, response):
         beers = []
 
@@ -29,17 +33,24 @@ class SuperiorLqSpider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         p = hxs.select(selector) 
         
-		#beer information is laid out in a 2 column table. rhs/lhs = right hand/left hand side
+        #beer information is laid out in a 2 column table. rhs/lhs = right hand/left hand side
         for row in p:
             item = Beer()
-            #LHS:
-            item['beer'] = row.select('td/table/tr/td/a/text()').extract()[0]
+            #LHS
+            beerinfo = row.select('td/table/tr/td/a/text()').re(self.splitter)
+            item['brewer'] = beerinfo[0]
+            item['beer'] = beerinfo[1]
+            item['quantity'] = beerinfo[2]
+            #item['beer'] = row.select('td/table/tr/td/a/text()').extract()[0]
             item['link'] = row.select('td/table/tr/td/a/@href').extract()[0]
             item['price'] = row.select('td//span[@class="price"]/text()').extract()[0]
             yield item
 
             #RHS:
-            item['beer'] = row.select('td/table/tr/td/a/text()').extract()[2]
+            item['brewer'] = beerinfo[3]
+            item['beer'] = beerinfo[4]
+            item['quantity'] = beerinfo[5]
+            #item['beer'] = row.select('td/table/tr/td/a/text()').extract()[2]
             item['link'] = row.select('td/table/tr/td/a/@href').extract()[3]
             item['price'] = row.select('td//span[@class="price"]/text()').extract()[1]
             yield item
