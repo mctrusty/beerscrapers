@@ -11,9 +11,9 @@ BOT_NAME = 'beer'
 SPIDER_MODULES = ['beer.spiders']
 NEWSPIDER_MODULE = 'beer.spiders'
 
-ITEM_PIPELINES = [
-    'beer.pipelines.BeerPipeline'
-]
+#ITEM_PIPELINES = [
+#    'beer.pipelines.BeerPipeline'
+#]
 
 LOG_FILE = "beerlogs.txt"
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
