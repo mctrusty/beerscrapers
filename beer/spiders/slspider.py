@@ -3,9 +3,10 @@ import re
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy import log
 
 from beer.items import Beer
-
+    
 class SuperiorLqSpider(CrawlSpider):
     name = "superiorlq"
     allowed_domains = ["superiorliquormarket.com"]
@@ -19,7 +20,8 @@ class SuperiorLqSpider(CrawlSpider):
     )
     
     # Beer names are listed in the format: MFG - Beer (qty)
-    splitter = re.compile('(.*?) - (.*?) \(([^\)]+)\)')
+    #splitter = re.compile('(.*?) - (.*?) \(([^\)]+)\)')
+    splitter = re.compile('(?P<brewer>.*?) - (?P<beer>.*?)\s?(?P<size>(?:\d+\.)?\d+\s?(?:OZ)? (?:CAN|BOTTLE)S?||(?:\d+OZ)\s?BOTTLE$|\d+L|\d/\d\s?BBL|\d+\s?ML\s?(?:BOTTLES?)?|BOTTLE)\s\((?P<qty>[^\)]+)\)')
 
     def parse_item(self, response):
         beers = []
@@ -37,21 +39,33 @@ class SuperiorLqSpider(CrawlSpider):
         for row in p:
             item = Beer()
             #LHS
-            beerinfo = row.select('td/table/tr/td/a/text()').re(self.splitter)
-            item['brewer'] = beerinfo[0]
-            item['beer'] = beerinfo[1]
-            item['quantity'] = beerinfo[2]
-            #item['beer'] = row.select('td/table/tr/td/a/text()').extract()[0]
-            item['link'] = row.select('td/table/tr/td/a/@href').extract()[0]
-            item['price'] = row.select('td//span[@class="price"]/text()').extract()[0]
-            yield item
+            #beerinfo = row.select('td/table/tr/td/a/text()').re(self.splitter)
+            beery = row.select('td/table/tr/td/a/text()').extract()
+            info = re.search(self.splitter, beery[0])
+            
+            if info is None:
+                self.log('No pattern match for %s' % beery, level=log.ERROR)
+            else:
+                item['brewer'] = info.group('brewer')
+                item['beer'] = info.group('beer')
+                item['quantity'] = info.group('qty')        
+                item['size'] = info.group('size')
+                #item['beer'] = row.select('td/table/tr/td/a/text()').extract()[0]
+                item['link'] = row.select('td/table/tr/td/a/@href').extract()[0]
+                item['price'] = row.select('td//span[@class="price"]/text()').extract()[0]
+                yield item
 
             #RHS:
-            item['brewer'] = beerinfo[3]
-            item['beer'] = beerinfo[4]
-            item['quantity'] = beerinfo[5]
-            #item['beer'] = row.select('td/table/tr/td/a/text()').extract()[2]
-            item['link'] = row.select('td/table/tr/td/a/@href').extract()[3]
-            item['price'] = row.select('td//span[@class="price"]/text()').extract()[1]
-            yield item
+            info = re.search(self.splitter, beery[2])
+            if info is None:
+                self.log('No pattern match for %s' % beery, level=log.ERROR)
+            else: 
+                item['brewer'] = info.group('brewer')
+                item['beer'] = info.group('beer')
+                item['quantity'] = info.group('qty')
+                item['size'] = info.group('size')
+                #item['beer'] = row.select('td/table/tr/td/a/text()').extract()[2]
+                item['link'] = row.select('td/table/tr/td/a/@href').extract()[3]
+                item['price'] = row.select('td//span[@class="price"]/text()').extract()[1]
+                yield item
             

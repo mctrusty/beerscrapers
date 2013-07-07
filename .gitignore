@@ -1,3 +1,6 @@
+#application specific
+beerlog*
+
 *.py[cod]
 *.json
 
