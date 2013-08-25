@@ -1,3 +1,4 @@
+
 # Scrapy settings for beer project
 #
 # For simplicity, this file contains only the most important settings by
@@ -10,6 +11,16 @@ BOT_NAME = 'beer'
 
 SPIDER_MODULES = ['beer.spiders']
 NEWSPIDER_MODULE = 'beer.spiders'
+
+DATABASE = {'drivername': 'postgres',
+            'host': 'localhost',
+            'port': '5432',
+            'username': 'michael',
+            'password':'7a07eChing',
+            'database':'beer'
+}
+
+ITEM_PIPELINES = ['beer.pipelines.BeerPostgresPipeline']
 
 #ITEM_PIPELINES = [
 #    'beer.pipelines.BeerPipeline'

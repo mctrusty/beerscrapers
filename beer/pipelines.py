@@ -1,3 +1,5 @@
+from sqlalchemy.orm import sessionmaker
+from models import Beers, db_connect, create_beers_table
 import re
 # Define your item pipelines here
 #
@@ -15,4 +17,29 @@ class BeerPipeline(object):
                 if len(match.groups()) > 1:
                     item['size'] = match.group(2)
         
+        return item
+
+class BeerPostgresPipeline(object):
+    """Pipeline for storing beer data in Postgres"""
+    def __init__(self):
+        engine = db_connect()
+        create_beers_table(engine)
+        self.Session = sessionmaker(bind=engine)
+
+    def process_item(self, item, spider):
+        """Save beer info in database.
+        Called for every item pipeline component
+        """
+        session = self.Session()
+        beer = Beers(**item)
+
+        try:
+            session.add(beer)
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
         return item
