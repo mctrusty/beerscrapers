@@ -21,6 +21,7 @@ class AppleJackSpider(CrawlSpider):
         rows = hxs.select(selector) 
         for row in rows:
             item = Beer()
+            item['store'] = 'applejack'
             item['beer'] = row.select('h5/a/text()').extract()
             item['price'] = row.select('div//span[@class="listValue"]/text()').extract()
             item['link'] =  row.select('h5/a/@href').extract()

@@ -8,6 +8,7 @@ from scrapy.item import Item, Field
 class Beer(Item):
     # define the fields for your item here like:
     # name = Field()
+    store  = Field()
     brewer = Field()
     beer = Field()
     size = Field() #size of individual unit - 12 oz can, pint, etc

@@ -19,6 +19,7 @@ class Beers(DeclarativeBase):
     """Beer Model for sqlalchemy"""
     __tablename__ = "beers"
     id = Column(Integer, primary_key=True)
+    store = Column('store', String, nullable=True)
     brewer = Column('brewer', String, nullable=True)
     beer = Column('beer', String, nullable=True)
     link = Column('link', String, nullable=True)

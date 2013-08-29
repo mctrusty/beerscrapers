@@ -20,6 +20,7 @@ class TotalBevSpider(BaseSpider):
         
         for row in rows:
             item = Beer()
+            item['store'] = 'totalbev'
             item['beer'] = row.select('td[3]/font/b/text()').extract()
             item['price'] = row.select('td[5]/font/b/text()').extract()
             item['size'] = row.select('td[4]/font/b/text()').extract()

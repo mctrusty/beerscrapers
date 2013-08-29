@@ -46,6 +46,7 @@ class SuperiorLqSpider(CrawlSpider):
             if info is None:
                 self.log('No pattern match for %s' % beery, level=log.ERROR)
             else:
+                item['store'] = 'superiorliquor'
                 item['brewer'] = info.group('brewer')
                 item['beer'] = info.group('beer')
                 item['quantity'] = info.group('qty')        
