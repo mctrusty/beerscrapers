@@ -7,7 +7,7 @@ def db_connect():
     """
     Connects to DB using DATABASE settings in settings.py
     """
-    return create_engine(URL(**settings.DATABASE))
+    return create_engine(URL(**settings.DATABASE), implicit_returning=False)
 
 DeclarativeBase = declarative_base()
 
