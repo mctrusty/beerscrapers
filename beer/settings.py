@@ -15,9 +15,9 @@ NEWSPIDER_MODULE = 'beer.spiders'
 DATABASE = {'drivername': 'postgres',
             'host': 'localhost',
             'port': '5432',
-            'username': 'michael',
-            'password':'beerpass0',
-            'database':'beer'
+            'username': 'beerlover',
+            'password':'tnst4bb54jbto',
+            'database':'beers'
 }
 
 ITEM_PIPELINES = ['beer.pipelines.BeerPostgresPipeline']

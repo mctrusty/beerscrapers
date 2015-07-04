@@ -1,10 +1,10 @@
-from scrapy.spider import BaseSpider
+from scrapy.spiders import Spider
 from scrapy.selector import HtmlXPathSelector
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.linkextractors import LinkExtractor
 
 from beer.items import Beer
 
-class TotalBevSpider(BaseSpider):
+class TotalBevSpider(Spider):
     name = "totalbev"
     allowed_domains = "totalbev.com"
     start_urls = [

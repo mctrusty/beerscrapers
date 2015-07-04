@@ -1,9 +1,9 @@
 # coding: utf-8
 import re
-from scrapy.contrib.spiders import CrawlSpider, Rule
+from scrapy.spiders import CrawlSpider, Rule
 from scrapy.selector import HtmlXPathSelector
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from scrapy import log
+from scrapy.linkextractors import LinkExtractor
+import logging
 
 from beer.items import Beer
     
@@ -14,37 +14,44 @@ class SuperiorLqSpider(CrawlSpider):
         "http://www.superiorliquormarket.com"
     ]
     
-    rules = (
-        Rule(SgmlLinkExtractor(allow=('Beer_c_77.html'))),
-        Rule(SgmlLinkExtractor(allow=('Beer_c_77-\d+-3.html')), callback = 'parse_item', follow=True),
-    )
+    rules = [
+        Rule(LinkExtractor(allow=('Beer_c_77.html')), follow=True, callback='parse_item'),
+        Rule(LinkExtractor(allow=('Beer_c_77-\d+-3.html')), callback = 'parse_item', follow=True),
+    ]
     
     # Beer names are listed in the format: MFG - Beer (qty)
     #splitter = re.compile('(.*?) - (.*?) \(([^\)]+)\)')
     splitter = re.compile('(?P<brewer>.*?) - (?P<beer>.*?)\s?(?P<size>(?:\d+\.)?\d+\s?(?:OZ)? (?:CAN|BOTTLE)S?||(?:\d+OZ)\s?BOTTLE$|\d+L|\d/\d\s?BBL|\d+\s?ML\s?(?:BOTTLES?)?|BOTTLE)\s\((?P<qty>[^\)]+)\)')
 
     def parse_item(self, response):
+        from scrapy.shell import inspect_response
         beers = []
 
         # After page 1, tr[5] becomes tr[4] bc there's no category list
         row = 4 # The row is 
-        if (response.url == "http://www.superiorliquormarket.com/Beer_c_77-1-3.html"):
+        if ((response.url == "http://www.superiorliquormarket.com/Beer_c_77-1-3.html") or
+            (response.url == "http://www.superiorliquormarket.com/Beer_c_77.html")):
             row = 5
             
+        import pdb
         selector = '//form[@id="frmsortby"]/table/tr[' + str(row) + ']/td/table/tr[2]/td/table/tr'
         hxs = HtmlXPathSelector(response)
         p = hxs.select(selector) 
-        
+        pdb.set_trace()
         #beer information is laid out in a 2 column table. rhs/lhs = right hand/left hand side
         for row in p:
             item = Beer()
             #LHS
             #beerinfo = row.select('td/table/tr/td/a/text()').re(self.splitter)
             beery = row.select('td/table/tr/td/a/text()').extract()
-            info = re.search(self.splitter, beery[0])
+            pdb.set_trace()
+            #inspect_response(response, self)            
+            info = None
+            if len(beery) > 0:
+                info = re.search(self.splitter, beery[0])
             
             if info is None:
-                self.log('No pattern match for %s' % beery, level=log.ERROR)
+                logging.warning('No pattern match for %s' % beery)
             else:
                 item['store'] = 'superiorliquor'
                 item['brewer'] = info.group('brewer')
@@ -57,9 +64,10 @@ class SuperiorLqSpider(CrawlSpider):
                 yield item
 
             #RHS:
-            info = re.search(self.splitter, beery[2])
+            if len(beery) > 1:
+                info = re.search(self.splitter, beery[2])
             if info is None:
-                self.log('No pattern match for %s' % beery, level=log.ERROR)
+                logging.warning('No pattern match for %s' % beery)
             else: 
                 item['brewer'] = info.group('brewer')
                 item['beer'] = info.group('beer')

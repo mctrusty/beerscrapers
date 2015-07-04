@@ -1,6 +1,6 @@
-from scrapy.contrib.spiders import CrawlSpider, Rule
+from scrapy.spiders import CrawlSpider, Rule
 from scrapy.selector import HtmlXPathSelector
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.linkextractors import LinkExtractor
 
 from beer.items import Beer
 
@@ -12,7 +12,7 @@ class AppleJackSpider(CrawlSpider):
     ]
     
     rules = (
-        Rule(SgmlLinkExtractor(allow=('\?dd=\d+')), callback = 'parse_item', follow=True),
+        Rule(LinkExtractor(allow=('\?dd=\d+')), callback = 'parse_item', follow=True),
     )
 
     def parse_item(self, response):            
