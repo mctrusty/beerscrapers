@@ -15,8 +15,8 @@ class SuperiorLqSpider(CrawlSpider):
     ]
     
     rules = [
-        Rule(LinkExtractor(allow=('Beer_c_77.html')), follow=True, callback='parse_item'),
-        Rule(LinkExtractor(allow=('Beer_c_77-\d+-3.html')), callback = 'parse_item', follow=True),
+        Rule(LinkExtractor(allow=('Beer_c_77\.html')), follow=True, callback='parse_item'),
+        Rule(LinkExtractor(allow=('view_category\.asp\?cat=77&sortby=\[sortby\]&page=\d+')), callback = 'parse_item', follow=True),
     ]
     
     # Beer names are listed in the format: MFG - Beer (qty)
@@ -37,14 +37,14 @@ class SuperiorLqSpider(CrawlSpider):
         selector = '//form[@id="frmsortby"]/table/tr[' + str(row) + ']/td/table/tr[2]/td/table/tr'
         hxs = HtmlXPathSelector(response)
         p = hxs.select(selector) 
-        pdb.set_trace()
+#        pdb.set_trace()
         #beer information is laid out in a 2 column table. rhs/lhs = right hand/left hand side
         for row in p:
             item = Beer()
             #LHS
             #beerinfo = row.select('td/table/tr/td/a/text()').re(self.splitter)
             beery = row.select('td/table/tr/td/a/text()').extract()
-            pdb.set_trace()
+#            pdb.set_trace()
             #inspect_response(response, self)            
             info = None
             if len(beery) > 0:
