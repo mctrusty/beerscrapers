@@ -24,7 +24,6 @@ class SuperiorLqSpider(CrawlSpider):
     splitter = re.compile('(?P<brewer>.*?) - (?P<beer>.*?)\s?(?P<size>(?:\d+\.)?\d+\s?(?:OZ)? (?:CAN|BOTTLE)S?||(?:\d+OZ)\s?BOTTLE$|\d+L|\d/\d\s?BBL|\d+\s?ML\s?(?:BOTTLES?)?|BOTTLE)\s\((?P<qty>[^\)]+)\)')
 
     def parse_item(self, response):
-        from scrapy.shell import inspect_response
         beers = []
 
         # After page 1, tr[5] becomes tr[4] bc there's no category list
@@ -33,19 +32,17 @@ class SuperiorLqSpider(CrawlSpider):
             (response.url == "http://www.superiorliquormarket.com/Beer_c_77.html")):
             row = 5
             
-        import pdb
         selector = '//form[@id="frmsortby"]/table/tr[' + str(row) + ']/td/table/tr[2]/td/table/tr'
         hxs = HtmlXPathSelector(response)
         p = hxs.select(selector) 
-#        pdb.set_trace()
+
         #beer information is laid out in a 2 column table. rhs/lhs = right hand/left hand side
         for row in p:
             item = Beer()
             #LHS
-            #beerinfo = row.select('td/table/tr/td/a/text()').re(self.splitter)
+
             beery = row.select('td/table/tr/td/a/text()').extract()
-#            pdb.set_trace()
-            #inspect_response(response, self)            
+
             info = None
             if len(beery) > 0:
                 info = re.search(self.splitter, beery[0])
@@ -53,7 +50,7 @@ class SuperiorLqSpider(CrawlSpider):
             if info is None:
                 logging.warning('No pattern match for %s' % beery)
             else:
-                item['store'] = 'superiorliquor'
+                item['store'] = 'ChIJ_4EYS9OMa4cR6lc1QZHFnVU'
                 item['brewer'] = info.group('brewer')
                 item['beer'] = info.group('beer')
                 item['quantity'] = info.group('qty')        

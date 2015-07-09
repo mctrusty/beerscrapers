@@ -1,5 +1,5 @@
 from scrapy.spiders import Spider
-from scrapy.selector import HtmlXPathSelector
+from scrapy.selector import Selector
 from scrapy.linkextractors import LinkExtractor
 
 from beer.items import Beer
@@ -8,22 +8,22 @@ class TotalBevSpider(Spider):
     name = "totalbev"
     allowed_domains = "totalbev.com"
     start_urls = [
-        "http://www.totalbev.com/default.aspx?pageid=57&deptID=11&submit=search&scat=Domestic Beer&pz=&#results",
-        "http://www.totalbev.com/default.aspx?pageid=57&deptID=12&submit=search&scat=Imported%20Beer&pz=&#results",
-        "http://www.totalbev.com/default.aspx?pageid=57&deptID=13&submit=search&scat=MicroBrew&pz=&#results",
-        "http://www.totalbev.com/default.aspx?pageid=57&deptID=19&submit=search&scat=Kegs&pz=&#results"
+        "http://www.totalbev.com/Beer",
+        #"http://www.totalbev.com/Beer?page=\d+"
     ]
     
     def parse(self, response):
-        hxs = HtmlXPathSelector(response)
-        rows = hxs.select('//table[@id="ContentTable"]//table/tr')
-        
-        for row in rows:
+        sel = Selector(response)
+        products = sel.css('.product-title').xpath('text()').extract()
+        prices = response.css('span.price-value > span').xpath('text()').extract()
+        sizes = response.css('div.extra-field-show-on').re('Size:\s+(.*)')
+
+        for x in range(0,12):
             item = Beer()
-            item['store'] = 'totalbev'
-            item['beer'] = row.select('td[3]/font/b/text()').extract()
-            item['price'] = row.select('td[5]/font/b/text()').extract()
-            item['size'] = row.select('td[4]/font/b/text()').extract()
+            item['store'] = 'ChIJF1Qd58CJa4cRt9sMAOqW5cE'
+            item['beer'] = products[x]
+            item['price'] = prices[x]
+            item['size'] = sizes[x]
             yield item
         
     
