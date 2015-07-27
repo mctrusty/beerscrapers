@@ -7,6 +7,13 @@ beerlog*
 # C extensions
 *.so
 
+# Emacs temp files
+\#*\#
+.\#*
+
+*~
+*.txt
+
 # Packages
 *.egg
 *.egg-info

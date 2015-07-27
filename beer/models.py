@@ -25,4 +25,5 @@ class Beers(DeclarativeBase):
     link = Column('link', String, nullable=True)
     size = Column('size', String, nullable=True)
     quantity = Column('qty', String, nullable=True)
+    pkg = Column('pkg', String, nullable=True)
     price = Column('price', String, nullable=True)

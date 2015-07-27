@@ -14,5 +14,6 @@ class Beer(Item):
     size = Field() #size of individual unit - 12 oz can, pint, etc
     quantity = Field() #number of units in package - 12 pack, 6 pack, etc
     link = Field()
+    pkg = Field()
     price = Field()
     pass
