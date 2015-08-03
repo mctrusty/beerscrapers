@@ -53,7 +53,7 @@ class TotalBevSpider(CrawlSpider):
 
         for x in range(0,12):
             item = Beer()
-            item['store'] = 'xChIJF1Qd58CJa4cRt9sMAOqW5cE'
+            item['store'] = 'ChIJF1Qd58CJa4cRt9sMAOqW5cE'
             item['beer'] = products[x]
             item['price'] = prices[x]
             self.split_pkg_info(item, sizes[x])
