@@ -17,10 +17,10 @@ DATABASE = {'drivername': 'postgres',
             'port': '5432',
             'username': 'beerlover',
             'password':'tnst4bb54jbto',
-            'database':'beers'
+            'database':'beerlover'
 }
 
-ITEM_PIPELINES = ['beer.pipelines.BeerPostgresPipeline']
+ITEM_PIPELINES = {'beer.pipelines.KafkaBeerPipeline':1}
 
 #ITEM_PIPELINES = [
 #    'beer.pipelines.BeerPipeline'
