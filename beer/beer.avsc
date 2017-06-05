@@ -1,0 +1,15 @@
+{
+    "type": "record",
+    "name": "beer",
+    "namespace":"beerscrapers",
+    "fields" : [
+        {"name":"store","type":"string"},
+        {"name":"beer","type":["null","string"],"default":null},
+        {"name": "brewer","type": "string"},
+        {"name":"link", "type":["null","string"]},
+        {"name":"size", "type":"string"},
+        {"name":"qty", "type":"string"},
+        {"name":"pkg", "type":["null","string"]},
+        {"name":"price", "type":"string"} 
+    ]
+}

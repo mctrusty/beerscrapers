@@ -1,5 +1,9 @@
+from datamountaineer.schemaregistry.client import SchemaRegistryClient
+from datamountaineer.schemaregistry.serializers import MessageSerializer
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
 from sqlalchemy.orm import sessionmaker
-from models import Beers, db_connect, create_beers_table
+from .models import Beers, db_connect, create_beers_table
 import re
 # Define your item pipelines here
 #
@@ -43,3 +47,15 @@ class BeerPostgresPipeline(object):
             session.close()
 
         return item
+
+class KafkaBeerPipeline(object):
+    def __init__(self):
+        self.producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+        #serializer = MessageSerializer(client)
+    def process_item(self, item, spider):
+        client = SchemaRegistryClient(url='http://localhost:8081')
+        schema_id, avro_schema, schema_version = client.get_latest_schema('beerscraper')
+        serializer = MessageSerializer(client)
+        encoded = serializer.encode_record_with_schema('beer',avro_schema,item.__dict__['_values'])
+        self.producer.send('beer',encoded)
+
